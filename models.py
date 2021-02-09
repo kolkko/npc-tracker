@@ -3,11 +3,11 @@ from sqlalchemy import Column, String, Integer, create_engine, Boolean
 from flask_sqlalchemy import SQLAlchemy
 import json
 
-DB_HOST = os.getenv('DB_HOST', 'localhost:5432')  
-DB_USER = os.getenv('DB_USER', 'postgres')  
-DB_PASSWORD = os.getenv('DB_PASSWORD', 'a')  
-DB_NAME = os.getenv('DB_NAME', 'npc_test')  
-DB_PATH = 'postgresql+psycopg2://{}:{}@{}/{}'.format(DB_USER, DB_PASSWORD, DB_HOST, DB_NAME)
+# DB_HOST = os.getenv('DB_HOST', 'localhost:5432')  
+# DB_USER = os.getenv('DB_USER', 'postgres')  
+# DB_PASSWORD = os.getenv('DB_PASSWORD', 'a')  
+# DB_NAME = os.getenv('DB_NAME', 'npc_test')  
+# DB_PATH = 'postgresql+psycopg2://{}:{}@{}/{}'.format(DB_USER, DB_PASSWORD, DB_HOST, DB_NAME)
 
 db = SQLAlchemy()
 
@@ -15,7 +15,7 @@ db = SQLAlchemy()
 setup_db(app)
     binds a flask application and a SQLAlchemy service
 '''
-def setup_db(app, database_path=DB_PATH):
+def setup_db(app, database_path=DATABASE_URL):
     app.config["SQLALCHEMY_DATABASE_URI"] = database_path
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     db.app = app

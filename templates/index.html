@@ -1,15 +1,6 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="UTF-8" />
-    <title>NPC Tracker</title>
-  </head>
-  <body>
-    <ul>
-      {% for d in data %}
-      <li>{{ d.name }}</li>
-      {% endfor %}
-    </ul>
+{% extends 'base.html' %}
 
-  </body>
-</html>
+{% block content %}
+<h1>Index</h1>
+<p>I am overriding the content block in base.html</p>
+{% endblock content %}
