@@ -3,11 +3,11 @@ from sqlalchemy import Column, String, Integer, create_engine, Boolean
 from flask_sqlalchemy import SQLAlchemy
 import json
 
-# DB_HOST = os.getenv('DB_HOST', 'localhost:5432')  
-# DB_USER = os.getenv('DB_USER', 'postgres')  
-# DB_PASSWORD = os.getenv('DB_PASSWORD', 'a')  
-# DB_NAME = os.getenv('DB_NAME', 'npc_test')  
-# DB_PATH = 'postgresql+psycopg2://{}:{}@{}/{}'.format(DB_USER, DB_PASSWORD, DB_HOST, DB_NAME)
+DB_HOST = os.getenv('DB_HOST', 'localhost:5432')  
+DB_USER = os.getenv('DB_USER', 'postgres')  
+DB_PASSWORD = os.getenv('DB_PASSWORD', 'a')  
+DB_NAME = os.getenv('DB_NAME', 'npc_test')  
+DATABASE_URL = 'postgresql+psycopg2://{}:{}@{}/{}'.format(DB_USER, DB_PASSWORD, DB_HOST, DB_NAME)
 
 db = SQLAlchemy()
 
@@ -31,17 +31,15 @@ class Npc(db.Model):
   id = Column(Integer, primary_key=True)
   name = Column(String)
   appearance = Column(String)
-  image = Column(String)
-  quote = Column(String)
+  occupation = Column(String)
   roleplaying = Column(String)
   background = Column(String)
-  all_info = db.relationship('Information', backref='npc', lazy=True)
+  place_id = db.Column(db.Integer, db.ForeignKey('places.id'))
 
-  def __init__(self, name, appearance, image, quote, roleplaying, background):
+  def __init__(self, name, appearance, occupation, roleplaying, background):
     self.name = name
     self.appearance = appearance
-    self.image = image
-    self.quote = quote
+    self.occupation = image
     self.roleplaying = roleplaying
     self.background = background
 
@@ -61,28 +59,27 @@ class Npc(db.Model):
       'id': self.id,
       'name': self.name,
       'appearance': self.appearance,
-      'image': self.image,
-      'quote': self.quote,
+      'occupation': self.occupation,
       'roleplaying': self.roleplaying,
       'background': self.background
     }
 
 '''
-PLOT_POINTS
+PLACES
 '''
-class Information(db.Model):  
-  __tablename__ = 'information'
+class Place(db.Model):  
+  __tablename__ = 'places'
 
   id = Column(Integer, primary_key=True)
-  detail = Column(String)
-  revealed = Column(Boolean)
-  npc_id = Column(Integer, db.ForeignKey('npcs.id'))
+  name = Column(String)
+  location = Column(String)
+  description = Column(String)
+  all_npcs = db.relationship('Npc', backref='place', lazy=True)
 
-  def __init__(self, new_npc_details):
-    self.name = new_npc_details['name']
-    self.appearance = new_npc_details['appearance']
-    self.image = new_npc_details['image']
-    self.background = new_npc_details['background']
+  def __init__(self, new_place_details):
+    self.name = new_place_details['name']
+    self.location = new_place_details['location']
+    self.description = new_place_details['description']
 
   def insert(self):
     db.session.add(self)
@@ -99,9 +96,8 @@ class Information(db.Model):
     return {
       'id': self.id,
       'name': self.name,
-      'appearance': self.appearance,
-      'image': self.image,
-      'background': self.background
+      'location': self.location,
+      'description': self.description
     }
 
 # '''
