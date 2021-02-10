@@ -11,6 +11,7 @@ flask-script = "*"
 flask-migrate = "*"
 psycopg2-binary = "*"
 gunicorn = "*"
+flask-wtf = "*"
 
 [dev-packages]
 
