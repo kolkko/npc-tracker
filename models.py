@@ -3,13 +3,13 @@ from sqlalchemy import Column, String, Integer, create_engine, Boolean
 from flask_sqlalchemy import SQLAlchemy
 import json
 
-# DB_HOST = os.getenv('DB_HOST', 'localhost:5432')  
-# DB_USER = os.getenv('DB_USER', 'postgres')  
-# DB_PASSWORD = os.getenv('DB_PASSWORD', 'a')  
-# DB_NAME = os.getenv('DB_NAME', 'npc_test')  
-# DATABASE_URL = 'postgresql+psycopg2://{}:{}@{}/{}'.format(DB_USER, DB_PASSWORD, DB_HOST, DB_NAME)
+DB_HOST = os.getenv('DB_HOST', 'localhost:5432')  
+DB_USER = os.getenv('DB_USER', 'postgres')  
+DB_PASSWORD = os.getenv('DB_PASSWORD', 'a')  
+DB_NAME = os.getenv('DB_NAME', 'npc_test')  
+DATABASE_URL = 'postgresql+psycopg2://{}:{}@{}/{}'.format(DB_USER, DB_PASSWORD, DB_HOST, DB_NAME)
 
-DATABASE_URL = os.environ['DATABASE_URL']
+# DATABASE_URL = os.environ['DATABASE_URL']
 
 db = SQLAlchemy()
 
@@ -30,24 +30,28 @@ NPC
 class Npc(db.Model):  
   __tablename__ = 'npcs'
 
-  id = Column(Integer, primary_key=True)
-  name = Column(String)
-  appearance = Column(String)
-  occupation = Column(String)
-  roleplaying = Column(String)
-  background = Column(String)
+  id = db.Column(db.Integer, primary_key=True)
+  name = db.Column(db.String)
+  appearance = db.Column(db.String)
+  occupation = db.Column(db.String)
+  roleplaying = db.Column(db.String)
+  background = db.Column(db.String)
   place_id = db.Column(db.Integer, db.ForeignKey('places.id'))
 
-  def __init__(self, name, appearance, occupation, roleplaying, background):
+  def __init__(self, name, appearance, occupation, roleplaying, background, place_id):
+    print('creating new npc')
     self.name = name
     self.appearance = appearance
-    self.occupation = image
+    self.occupation = occupation
     self.roleplaying = roleplaying
     self.background = background
+    self.place_id = place_id
 
   def insert(self):
     db.session.add(self)
+    print('about to commit')
     db.session.commit()
+    print('committed')
   
   def update(self):
     db.session.commit()

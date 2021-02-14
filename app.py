@@ -50,22 +50,22 @@ def create_app(test_config=None):
   def post_npc():
     print("posting new npc")
     form = NpcForm(request.form)
+    print("Form name: ", request.form['name'])
     if not form:
       abort(400)
-    new_name = body.get('name', None)
-    new_appearance = body.get('appearance', None)
-    new_occupation = body.get('occupation', None)
-    new_roleplaying = body.get('roleplaying', None)
-    new_background = body.get('background', None)
     try:
+      print('create new npc')
       new_npc = Npc(
-        name=new_name,
-        appearance=new_appearance,
-        occupation=new_occupation,
-        roleplaying=new_roleplaying,
-        background=new_background
+        name=request.form['name'],
+        appearance=request.form['appearance'],
+        occupation=request.form['occupation'],
+        roleplaying=request.form['roleplaying'],
+        background=request.form['background'], 
+        place_id=request.form['place_id']
       )
+      print('about to insert data')
       new_npc.insert()
+      print('data has been inserted')
       selection = Npc.query.order_by(Npc.id).all()
       return jsonify({
         'success': True,
