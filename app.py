@@ -1,23 +1,37 @@
 import os
+import json
+
 from flask import Flask, request, abort, jsonify, render_template
 from flask_sqlalchemy import SQLAlchemy
-from flask_cors import CORS
+from flask_cors import CORS, cross_origin
+from jose import jwt
 
 from models import setup_db, Npc, Place
 from forms import *
+from auth import *
 
-
-
-
+AUTH0_DOMAIN = 'dev-test-fsnd.eu.auth0.com'
+API_AUDIENCE = 'npc-tracker'
+ALGORITHMS = ["RS256"]
+AUTH0_LOGIN = 'https://dev-test-fsnd.eu.auth0.com/authorize?audience=npc-tracker&response_type=token&client_id=dvbXKtL4j4yu4JL3gQsWsws7BwFIlXPF&redirect_uri=http://127.0.0.1:5000/index'
 
 def create_app(test_config=None):
   # create and configure the app
   app = Flask(__name__)
   setup_db(app)
   app.config['SECRET_KEY'] = os.urandom(32)
-  # CORS(app)
+  CORS(app)
+
+  # -----------------------------------------------------------
+  # Login and home
+  # -----------------------------------------------------------
 
   @app.route('/')
+  def login():
+    return render_template('login.html')
+
+  @app.route('/index')
+  @requires_auth('get:npcs')
   def index():
     return render_template('index.html', data=Npc.query.all())
 
