@@ -2,6 +2,7 @@ import os
 import unittest
 import json
 from flask_sqlalchemy import SQLAlchemy
+from flask_wtf import Form
 
 from app import create_app
 from models import setup_db, Npc, Place
@@ -62,16 +63,17 @@ class NpcTrackerTestCase(unittest.TestCase):
         #     'background': 'Grew up to the east of the Neverwinter Woods',
         #     'place_id': 1
         # }
-        form = NpcForm(
-            name='test',
-            appearance='test',
-            occupation='test',
-            roleplaying='test',
-            background='test',
-            place_id='1'
-        )
-        print('HEREERERER')
-        res = self.client().post('/npcs/create', form)
+        form = NpcForm(Form)
+        form.name = 'test'
+            # name='test',
+            # appearance='test',
+            # occupation='test',
+            # roleplaying='test',
+            # background='test',
+            # place_id='1'
+        
+        print('NpcForm has been created')
+        res = self.client().post('/npcs/create', form=form)
         print('RES ', res)
         data = json.loads(res.data)
 

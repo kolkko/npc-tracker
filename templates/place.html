@@ -16,18 +16,15 @@
         <td><b>Name: </b>{{ data.name }}</td>
       </tr>
       <tr>
-        <td><b>Appearance: </b>{{ data.appearance }}</td>
+        <td><b>Location: </b>{{ data.location }}</td>
       </tr>
       <tr>
-        <td><b>Occupation: </b>{{ data.occupation }}</td>
-      </tr>
-      <tr>
-        <td><b>Roleplaying: </b>{{ data.roleplaying }}</td>
+        <td><b>Description: </b>{{ data.description }}</td>
       </tr>
       <tr>
         <td class="text-right">
-          <a class="btn btn-info btn-sm" href="/npcs/{{data.id}}/edit" role="button">Edit</a>
-          <a class="btn btn-danger btn-sm" href="/npcs/{{data.id}}/delete" role="button">Delete</a></td>
+          <a class="btn btn-info btn-sm" href="/places/{{data.id}}/edit" role="button">Edit</a>
+          <a class="btn btn-danger btn-sm" href="/place/{{data.id}}/delete" role="button">Delete</a></td>
       </tr>
     </tbody>
   </table>

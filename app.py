@@ -1,7 +1,7 @@
 import os
 import json
 
-from flask import Flask, request, abort, jsonify, render_template
+from flask import Flask, request, abort, jsonify, render_template, flash, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS, cross_origin
 from jose import jwt
@@ -56,6 +56,7 @@ def create_app(test_config=None):
     return render_template('index.html', data=place_names), 200
 
 
+
   # -----------------------------------------------------------
   # CRUD Operations for NPCs # TODO: PATCH, DELETE
   # -----------------------------------------------------------
@@ -93,8 +94,7 @@ def create_app(test_config=None):
         place_id=request.form['place_id']
       )
       new_npc.insert()
-      selection = Npc.query.order_by(Npc.id).all()
-      return render_template('index.html', data=selection)
+      return redirect(url_for('index'))
     except Exception:
       abort(422)
 
@@ -113,40 +113,34 @@ def create_app(test_config=None):
       npc.background=request.form['background'], 
       npc.place_id=request.form['place_id']
       npc.update()
-      selection = Npc.query.order_by(Npc.id).all()
-      return render_template('index.html', data=selection)
+      return redirect(url_for('index'))
     except Exception:
       abort(422)
 
 
 
-  @app.route('/npcs/<int:npc_id>', methods=['DELETE'])
+  @app.route('/npcs/<int:npc_id>/delete', methods=['GET'])
   def delete_npc(npc_id):
     print('about to delete')
     selection = Npc.query.filter(
-        Npc.id == npc_id).one_or_none()
-    print("selection")
+      Npc.id == npc_id).one_or_none()
     if not selection:
-        abort(400)
+      abort(400)
     try:
-        selection.delete()
-        print('deleted', npc_id)
-        return jsonify({
-          'success': True,
-          'deleted': npc_id
-          })
+      selection.delete()
+      return redirect(url_for('index'))
     except Exception:
-        abort(422)
+      abort(422)
 
   # -----------------------------------------------------------
-  # CRUD Operations for Location TODO
+  # CRUD Operations for Place
   # -----------------------------------------------------------
 
   @app.route('/places', methods=['GET'])
   def get_places():
-    results = Place.query.order_by(Place.id).all()
+    results = Place.query.order_by(Place.location).all()
     places = [place.format() for place in results]
-    return render_template('places.html', data=places)
+    return render_template('places.html', data=places), 200
 
   @app.route('/places/<int:place_id>', methods=['GET'])
   def get_one_place():
@@ -155,22 +149,11 @@ def create_app(test_config=None):
     if not selection:
         abort(400)
     place = selection.format()
-    return jsonify({
-      'success' : True,
-      'place' : place
-    })
+    return redirect(url_for('places'))
 
   @app.route('/places/create', methods=['POST'])
   def post_place():
-    print("posting new place")
-    # # form = PlaceForm(request.form)
-    # print("Form name: ", request.form['name'])
-    # print("Form name: ", request.form['location'])
-    # print("Form name: ", request.form['description'])
-    # if not form:
-    #   abort(400)
     try:
-      print('create new place')
       new_place = Place(
         new_name=request.form['name'],
         new_location=request.form['location'],
@@ -180,14 +163,30 @@ def create_app(test_config=None):
       new_place.insert()
       print('data has been inserted')
       selection = Place.query.order_by(Place.id).all()
-      return render_template('places.html', data=selection)
+      return redirect(url_for('places'))
     except Exception:
       abort(422)
 
-  
-  @app.route('/places/<int:place_id>', methods=['DELETE'])
+  @app.route('/places/<int:place_id>/edit', methods=['POST'])
+  def update_place(place_id):
+    form = PlaceForm(request.form)
+    place = Place.query.filter(
+        Place.id == place_id).one_or_none()
+    if not form:
+      abort(400)
+    try:
+      place.name=request.form['name'],
+      place.location=request.form['location'],
+      place.description=request.form['description'],
+
+      place.update()
+      selection = Place.query.order_by(Place.id).all()
+      return redirect(url_for('places'))
+    except Exception:
+      abort(422)
+
+  @app.route('/places/<int:place_id>', methods=['GET'])
   def delete_place(place_id):
-    print('about to delete')
     selection = Place.query.filter(
         Place.id == place_id).one_or_none()
     print("selection")
@@ -195,13 +194,33 @@ def create_app(test_config=None):
         abort(400)
     try:
         selection.delete()
-        print('deleted', place_id)
-        return jsonify({
-          'success': True,
-          'deleted': place_id
-          })
+        return redirect(url_for('places'))
     except Exception:
         abort(422)
+
+  # -----------------------------------------------------------
+  # View places associated with a location
+  # -----------------------------------------------------------
+
+  # @app.route('/locations')
+  # # @requires_auth('get:npcs')
+  # def locations():
+  #   data = Npc.query.all()
+  #   places = Place.query.all()
+  #   place_names= []
+  #   for d in data:
+  #     place_name = Place.query.filter(
+  #           Place.id == d.place_id).one_or_none()
+  #     place_names.append({
+  #       'id': d.id,
+  #       'name': d.name,
+  #       'appearance': d.appearance,
+  #       'occupation': d.occupation,
+  #       'roleplaying': d.roleplaying,
+  #       'background': d.background,
+  #       'place_name': place_name.name
+  #       })
+  #   return render_template('index.html', data=place_names), 200
 
 
   # -----------------------------------------------------------
