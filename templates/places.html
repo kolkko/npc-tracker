@@ -9,7 +9,6 @@
     <thead>
       <tr>
         <th>Name</th>
-        <th>Occupation</th>
         <th>Location</th>
         <th class="text-right">Actions</th>
       </tr>
@@ -18,9 +17,8 @@
       {% for d in data %}
       <tr>
         <td><a href="/npcs/{{ d.id }}">{{ d.name }}</a></td>
-        <td>{{ d.occupation }}</td>
         <td>{{ d.location }}</td>
-        <td class="text-right"><a class="btn btn-primary btn-sm" href="/npcs/{{ d.id }}" role="button">View</a></td>
+        <td class="text-right"><a class="btn btn-primary btn-sm" href="/places/{{ d.id }}" role="button">View</a></td>
       </tr>
       {% endfor %}
     </tbody>

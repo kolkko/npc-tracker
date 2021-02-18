@@ -82,10 +82,12 @@ class Place(db.Model):
   description = Column(String)
   all_npcs = db.relationship('Npc', backref='place', lazy=True)
 
-  def __init__(self, new_place_details):
-    self.name = new_place_details['name']
-    self.location = new_place_details['location']
-    self.description = new_place_details['description']
+  def __init__(self, new_name, new_location, new_description):
+    print('adding new place in init')
+    self.name = new_name
+    self.location = new_location
+    self.description = new_description
+    print(self.name)
 
   def insert(self):
     db.session.add(self)

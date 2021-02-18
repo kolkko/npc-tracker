@@ -8,21 +8,27 @@
   <table class="table text-light">
     <thead>
       <tr>
-        <th>Name</th>
-        <th>Occupation</th>
-        <th>Location</th>
-        <th class="text-right">Actions</th>
+        <th>NPCs</th>
       </tr>
     </thead>
     <tbody>
-      {% for d in data %}
       <tr>
-        <td><a href="/npcs/{{ d.id }}">{{ d.name }}</a></td>
-        <td>{{ d.occupation }}</td>
-        <td>{{ d.location }}</td>
-        <td class="text-right"><a class="btn btn-primary btn-sm" href="/npcs/{{ d.id }}" role="button">View</a></td>
+        <td><b>Name: </b>{{ data.name }}</td>
       </tr>
-      {% endfor %}
+      <tr>
+        <td><b>Appearance: </b>{{ data.appearance }}</td>
+      </tr>
+      <tr>
+        <td><b>Occupation: </b>{{ data.occupation }}</td>
+      </tr>
+      <tr>
+        <td><b>Roleplaying: </b>{{ data.roleplaying }}</td>
+      </tr>
+      <tr>
+        <td class="text-right">
+          <a class="btn btn-info btn-sm" href="" role="button">Edit</a>
+          <a class="btn btn-danger btn-sm" href="" role="button">Delete</a></td>
+      </tr>
     </tbody>
   </table>
   {% endif %}

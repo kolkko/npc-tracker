@@ -4,7 +4,8 @@ import json
 from flask_sqlalchemy import SQLAlchemy
 
 from app import create_app
-from models import setup_db, Npc, Information
+from models import setup_db, Npc, Place
+from forms import *
 
 
 class NpcTrackerTestCase(unittest.TestCase):
@@ -53,16 +54,25 @@ class NpcTrackerTestCase(unittest.TestCase):
 
     def test_create_npc(self):
         # New question details, for test
-        json_test_npc = {
-            'name': 'Aveline Ranier',
-            'appearance': 'Freckled and firm of jaw',
-            'image': 'image_url',
-            'quote': 'Get it done',
-            'roleplaying': 'Low register and expressive eyes',
-            'background': 'Grew up to the east of the Neverwinter Woods'
-        }
-
-        res = self.client().post('/npcs', json=json_test_npc)
+        # json_test_npc = {
+        #     'name': 'Aveline Ranier',
+        #     'appearance': 'Freckled and firm of jaw',
+        #     'occupation': 'Guard',
+        #     'roleplaying': 'Low register and expressive eyes',
+        #     'background': 'Grew up to the east of the Neverwinter Woods',
+        #     'place_id': 1
+        # }
+        form = NpcForm(
+            name='test',
+            appearance='test',
+            occupation='test',
+            roleplaying='test',
+            background='test',
+            place_id='1'
+        )
+        print('HEREERERER')
+        res = self.client().post('/npcs/create', form)
+        print('RES ', res)
         data = json.loads(res.data)
 
         self.assertEqual(res.status_code, 200)
@@ -91,19 +101,14 @@ class NpcTrackerTestCase(unittest.TestCase):
         json_test_npc = {
             'name': 'Data for deleting',
             'appearance': 'test',
-            'image': 'test',
-            'quote': 'test',
+            'occupation': 'test',
             'roleplaying': 'test',
-            'background': 'test'
+            'background': 'test',
+            'place_id': 1
         }
-        res = self.client().post('/npcs', json=json_test_npc)
+        res = self.client().post('/npcs/create', json=json_test_npc)
         data = json.loads(res.data)
-        npc_id = data['npc_id']
-        print("This is the npc_id: ", npc_id, "This is data: ", data)
-        res = self.client().get('/npcs')
-        data = json.loads(res.data)
-        print("This is the npc data: ", data)
-        print("This is the route: ", '/npcs/{}'.format(npc_id))
+        print('NPC ID', data)
 
         # Test the DELETE request by deleting the new question
         res = self.client().delete('/npcs/{}'.format(npc_id))
