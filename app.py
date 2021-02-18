@@ -28,7 +28,7 @@ def create_app(test_config=None):
   CORS(app)
 
   # -----------------------------------------------------------
-  # Login and home
+  # Load Pages
   # -----------------------------------------------------------
 
   @app.route('/')
@@ -36,9 +36,25 @@ def create_app(test_config=None):
     return render_template('login.html'), 200
 
   @app.route('/index')
-  @requires_auth('get:npcs')
+  # @requires_auth('get:npcs')
   def index():
-    return render_template('index.html', data=Npc.query.all()), 200
+    data = Npc.query.all()
+    places = Place.query.all()
+    place_names= []
+    for d in data:
+      place_name = Place.query.filter(
+            Place.id == d.place_id).one_or_none()
+      place_names.append({
+        'id': d.id,
+        'name': d.name,
+        'appearance': d.appearance,
+        'occupation': d.occupation,
+        'roleplaying': d.roleplaying,
+        'background': d.background,
+        'place_name': place_name.name
+        })
+    return render_template('index.html', data=place_names), 200
+
 
   # -----------------------------------------------------------
   # CRUD Operations for NPCs # TODO: PATCH, DELETE
@@ -82,7 +98,28 @@ def create_app(test_config=None):
     except Exception:
       abort(422)
 
-  
+  @app.route('/npcs/<int:npc_id>/edit', methods=['POST'])
+  def update_npc(npc_id):
+    form = NpcForm(request.form)
+    npc = Npc.query.filter(
+        Npc.id == npc_id).one_or_none()
+    if not form:
+      abort(400)
+    try:
+      npc.name=request.form['name'],
+      npc.appearance=request.form['appearance'],
+      npc.occupation=request.form['occupation'],
+      npc.roleplaying=request.form['roleplaying'],
+      npc.background=request.form['background'], 
+      npc.place_id=request.form['place_id']
+      npc.update()
+      selection = Npc.query.order_by(Npc.id).all()
+      return render_template('index.html', data=selection)
+    except Exception:
+      abort(422)
+
+
+
   @app.route('/npcs/<int:npc_id>', methods=['DELETE'])
   def delete_npc(npc_id):
     print('about to delete')
@@ -174,6 +211,21 @@ def create_app(test_config=None):
   def create_npc_form():
     form = NpcForm()
     return render_template('new_npc.html', form=form)
+
+  @app.route('/npcs/<int:npc_id>/edit', methods=['GET'])
+  def edit_npc(npc_id):
+    selection = Npc.query.filter(
+        Npc.id == npc_id).one_or_none()
+    if not selection:
+        abort(400)
+    form = NpcForm()
+    form.name.data = selection.name
+    form.appearance.data = selection.appearance
+    form.occupation.data = selection.occupation
+    form.roleplaying.data = selection.roleplaying
+    form.background.data = selection.background
+    form.place_id.data = selection.place_id
+    return render_template('edit_npc.html', form=form,  data=selection)    
 
   @app.route('/places/create', methods=['GET'])
   def create_place_form():
