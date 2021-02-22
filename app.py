@@ -1,20 +1,21 @@
 import os
 import json
-
-from flask import Flask, request, abort, jsonify, render_template, flash, redirect, url_for
+from flask import Flask, request, abort, jsonify, render_template, flash, redirect, url_for, session
+from authlib.integrations.flask_client import OAuth
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS, cross_origin
 from jose import jwt
 
 from models import setup_db, Npc, Place
 from forms import *
-from auth import *
+from auth import requires_auth, AuthError
 
 AUTH0_DOMAIN = 'dev-test-fsnd.eu.auth0.com'
 API_AUDIENCE = 'npc-tracker'
 ALGORITHMS = ["RS256"]
 AUTH0_LOGIN = 'https://dev-test-fsnd.eu.auth0.com/authorize?audience=npc-tracker&response_type=token&client_id=dvbXKtL4j4yu4JL3gQsWsws7BwFIlXPF&redirect_uri=http://127.0.0.1:5000/index'
-
+AUTH0_CLIENT_ID = "dvbXKtL4j4yu4JL3gQsWsws7BwFIlXPF"
+AUTH0_CLIENT_SECRET = "XcscDJlT5d9zUT3y0pR2nwDbVZosc47mQNRMJUYkaL01lf36X1vQ8CnQjY_G4aOW"
 bearer_tokens = {
   "Dungeon Master": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImpoSWFSYWdqMUxtU0pEazZESTJDdiJ9.eyJpc3MiOiJodHRwczovL2Rldi10ZXN0LWZzbmQuZXUuYXV0aDAuY29tLyIsInN1YiI6Imdvb2dsZS1vYXV0aDJ8MTAyNzM1NDM5MDU1NTU5MTYyMTE5IiwiYXVkIjpbIm5wYy10cmFja2VyIiwiaHR0cHM6Ly9kZXYtdGVzdC1mc25kLmV1LmF1dGgwLmNvbS91c2VyaW5mbyJdLCJpYXQiOjE2MTM1NTI2MjksImV4cCI6MTYxMzU1OTgyOSwiYXpwIjoiZHZiWEt0TDRqNHl1NEpMM2dRc1dzd3M3QndGSWxYUEYiLCJzY29wZSI6Im9wZW5pZCBwcm9maWxlIGVtYWlsIiwicGVybWlzc2lvbnMiOlsiYWRkOm5wYyIsImRlbGV0ZTpucGMiLCJlZGl0Om5wYyIsImdldDpucGNzIl19.Bk4H9-CUJlSkp9jZj4OZXebGdOjy7bMxNtJi6gvTyLDn4HJ7OXiJRHywVRllCpnhHSWSL1bTG2W6S1HEL236uPKRHjku98tbJFNwQW_quFUuDHhpxf7gWl-rD0-PNVx7mAblgvDc_qWvJsa1CDuNLR3Ht4Vs1lNaCS5vXSDnU21IgWll-2joWUYtklv67k5AwrjFQJwih1irahgEIn-TpTNMQP5reyHDpMQ1FtnyDOhlGYq6WR_m7LOcE-As3JTOfTtNFH5rhUYld4vJm6BmI13JCm_g1dLMafNt_dpEAOCF8-ea0hsbCYf2HUAAz5i3IItl9VoFSM624tu49Hgnhw",
   "": ""
@@ -28,16 +29,60 @@ def create_app(test_config=None):
   CORS(app)
 
   # -----------------------------------------------------------
+  # Auth0
+  # -----------------------------------------------------------
+
+  oauth = OAuth(app)
+
+  auth0 = oauth.register(
+    'auth0',
+    client_id=AUTH0_CLIENT_ID,
+    client_secret=AUTH0_CLIENT_SECRET,
+    api_base_url='https://' + AUTH0_DOMAIN,
+    access_token_url='https://' + AUTH0_DOMAIN + '/oauth/token',
+    authorize_url='https://' + AUTH0_DOMAIN + '/authorize',
+    client_kwargs={
+      'scope': 'openid profile email'
+    }
+  )
+
+  @app.route('/login')
+  @cross_origin()
+  def login():
+      redirect_uri = url_for('authorize', _external=True)
+      return auth0.authorize_redirect(redirect_uri)
+
+  @app.route('/authorize')
+  @cross_origin()
+  def authorize():
+      token = auth0.authorize_access_token()
+      print('TOKEN: ', token)
+      # you can save the token into database
+      auth_header = {
+        'Authorization': 'bearer ' + token['id_token']
+        }
+      # request.headers.add_header(auth_header)
+      return redirect(url_for('index', token=token))
+
+  @app.after_request
+  def after_request(response):
+	  response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization,true')
+	  response.headers.add('Access-Control-Allow-Methods', 'GET,PATCH,POST,DELETE,OPTIONS')
+	  return response
+
+  # -----------------------------------------------------------
   # Load Pages
   # -----------------------------------------------------------
 
   @app.route('/')
-  def login():
+  @cross_origin()
+  def home():
     return render_template('login.html'), 200
 
   @app.route('/index')
-  # @requires_auth('get:npcs')
-  def index():
+  @cross_origin()
+  @requires_auth('get:npcs')
+  def index(token):
     data = Npc.query.all()
     places = Place.query.all()
     place_names= []

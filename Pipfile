@@ -16,6 +16,8 @@ python-dotenv = "*"
 python-jose = "*"
 six = "*"
 "flask.cors" = "*"
+authlib = "*"
+requests = "*"
 
 [dev-packages]
 
