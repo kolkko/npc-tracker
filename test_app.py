@@ -7,13 +7,14 @@ from flask_wtf import Form
 from app import create_app
 from models import setup_db, Npc, Place
 from forms import *
+from config import Authtokens
 
-dm = 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImpoSWFSYWdqMUxtU0pEazZESTJDdiJ9.eyJpc3MiOiJodHRwczovL2Rldi10ZXN0LWZzbmQuZXUuYXV0aDAuY29tLyIsInN1YiI6Imdvb2dsZS1vYXV0aDJ8MTAyNzM1NDM5MDU1NTU5MTYyMTE5IiwiYXVkIjpbIm5wYy10cmFja2VyIiwiaHR0cHM6Ly9kZXYtdGVzdC1mc25kLmV1LmF1dGgwLmNvbS91c2VyaW5mbyJdLCJpYXQiOjE2MTQxNjA0NTksImV4cCI6MTYxNDI0Njg1OSwiYXpwIjoiZHZiWEt0TDRqNHl1NEpMM2dRc1dzd3M3QndGSWxYUEYiLCJzY29wZSI6Im9wZW5pZCBwcm9maWxlIGVtYWlsIiwicGVybWlzc2lvbnMiOlsiYWRkOm5wYyIsImRlbGV0ZTpucGMiLCJlZGl0Om5wYyIsImdldDpucGNzIl19.a6-kT98_hRHYSRBwbxPru7mSyHU9vu5-_7j4VAprtQetw0PCVZUZyGSu84M1AFObRga4W4tnbJO4bq_KFvYRcUYAIw8zOL_ShB457Pjqp4L6t8aJSiKUHi7BnTX0F8etLxvuLEtILS430T6JXnyaGeJaRfuGhjxu8-2qHimdd12cmutxHVMXGYYDLLcQPzy2Sjq5P1gXgatBw8-TP11emZYonAgBy-uh0_ucJKrU9gTzmecNAyE5MG8LJlb9hs9ZNBEfVypUasNDjFeDoCufffYAE3IcSicQ4-z7d-mkgE2xrwu_mhm5OHLrUZgtobPE3cmvaHGCylXsByTqvwBYAg'
+# dm = 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImpoSWFSYWdqMUxtU0pEazZESTJDdiJ9.eyJpc3MiOiJodHRwczovL2Rldi10ZXN0LWZzbmQuZXUuYXV0aDAuY29tLyIsInN1YiI6Imdvb2dsZS1vYXV0aDJ8MTAyNzM1NDM5MDU1NTU5MTYyMTE5IiwiYXVkIjpbIm5wYy10cmFja2VyIiwiaHR0cHM6Ly9kZXYtdGVzdC1mc25kLmV1LmF1dGgwLmNvbS91c2VyaW5mbyJdLCJpYXQiOjE2MTQxNzg2MzIsImV4cCI6MTYxNDI2NTAzMiwiYXpwIjoiZHZiWEt0TDRqNHl1NEpMM2dRc1dzd3M3QndGSWxYUEYiLCJzY29wZSI6Im9wZW5pZCBwcm9maWxlIGVtYWlsIiwicGVybWlzc2lvbnMiOlsiYWRkOm5wYyIsImRlbGV0ZTpucGMiLCJlZGl0Om5wYyIsImdldDpucGNzIl19.NShPnh-KEMcW-Hp-itc91PInzEgoN1lRl5KHb8eealPpuBlCwhwHVJRd8OG9ROA-HQvfxMNSjELyOP0NREnyrFmsEeBCHA7iPwR_YQ9FN7ouJS7GxC5bgCyokz7fEUKyWrbT_ej7tUUXREKLrT0zBhYhWVTyNF1VCBYVqUB9NbQpCBRY1TgOUWuOlsq9B4tYd_9ZzQu_A6dziarx54hLEt8iXd8dtxyFOIEVoL0xthUOEGa4Glf2jXc51Cr-H4dfx7f5gNB89fGAMj-kY5mCKEOQOwHFFZgujqmWpDdyJ7-qtc4uFskL0X8PsTSBw4t4C1UaQj8jGHhlCo1j2Dgc3w'
 
 class NpcTrackerTestCase(unittest.TestCase):
 
+    # runs before each test
     def setUp(self):
-        """Define test variables and initialize app."""
         DB_HOST = os.getenv('DB_HOST', 'localhost:5432')  
         DB_USER = os.getenv('DB_USER', 'postgres')  
         DB_PASSWORD = os.getenv('DB_PASSWORD', 'a')  
@@ -21,29 +22,32 @@ class NpcTrackerTestCase(unittest.TestCase):
         DB_PATH = 'postgresql+psycopg2://{}:{}@{}/{}'.format(DB_USER, DB_PASSWORD, DB_HOST, DB_NAME)
 
         self.app = create_app()
+        self.app.testing = True
         self.client = self.app.test_client
+        self.game_master = Authtokens["game_master"]
         self.database_name = DB_NAME
         self.database_path = DB_PATH
         setup_db(self.app, self.database_path)
 
-        # binds the app to the current context
-        with self.app.app_context():
-            self.db = SQLAlchemy()
-            self.db.init_app(self.app)
-            # create all tables
-            self.db.create_all()
-
+    # runs after each test
     def tearDown(self):
-        """Executed after reach test"""
+        print("tearDown")
         pass
 
-# ----------------------------------------------------------------------------
-# Test: GET /npcs 
-# ----------------------------------------------------------------------------
+    # ----------------------------------------------------------------------------
+    # Test: GET /npcs 
+    # ----------------------------------------------------------------------------
 
+    def test_home(self):
+        res = self.client().get('/')
+        self.assertEqual(res.status_code, 200)
+
+    def test_home_error(self):
+        res = self.client().get('/wrong')
+        self.assertEqual(res.status_code, 404)
+    
     def test_get_npcs(self):
-        print("Doing test")
-        res = self.client().get('/npcs', headers={'Authorization': 'Bearer ' + dm})
+        res = self.client().get('/npcs', headers={'Authorization': str(self.game_master)})
         self.assertEqual(res.status_code, 200)
 
 # ----------------------------------------------------------------------------
@@ -118,6 +122,40 @@ class NpcTrackerTestCase(unittest.TestCase):
     #     self.assertEqual(res.status_code, 400)
     #     self.assertEqual(data['success'], False)
 
+    # ----------------------------------------------------------------------------
+    # Test: Get forms to create resources
+    # ----------------------------------------------------------------------------
+    def test_edit_npc_form(self):
+        res = self.client().get('/npcs/1/edit')
+        self.assertEqual(res.status_code, 200)
+    
+    def test_edit_npc_form_error(self):
+        res = self.client().get('/npcs/999999999/edit')
+        self.assertEqual(res.status_code, 400)
+
+    def test_create_npc_form(self):
+        res = self.client().get('/npcs/create')
+        self.assertEqual(res.status_code, 200)
+
+    def test_create_npc_form_error(self):
+            res = self.client().patch('/npcs/create')
+            self.assertEqual(res.status_code, 405)
+
+    def test_edit_place_form(self):
+        res = self.client().get('/places/1/edit')
+        self.assertEqual(res.status_code, 200)
+
+    def test_edit_place_form_error(self):
+        res = self.client().get('/places/999999999/edit')
+        self.assertEqual(res.status_code, 400)
+
+    def test_create_place_form(self):
+        res = self.client().get('/places/create')
+        self.assertEqual(res.status_code, 200)
+
+    def test_create_place_form_error(self):
+        res = self.client().patch('/places/create')
+        self.assertEqual(res.status_code, 405)
 
 # Make the tests conveniently executable
 if __name__ == "__main__":

@@ -21,8 +21,8 @@ class NpcForm(Form):
     background = StringField(
         'background', validators=[]
     )
-    place_id = StringField(
-        'place_id', validators=[],
+    place_id = SelectField(
+        'place_id', validators=[], coerce=str
     )
     # genres = SelectMultipleField(
     #     'genres', validators=[DataRequired()],

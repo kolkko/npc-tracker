@@ -1,7 +1,4 @@
-# import os
-# SECRET_KEY = os.urandom(32)
-# # Grabs the folder where the script runs.
-# basedir = os.path.abspath(os.path.dirname(__file__))
-
-# # Enable debug mode.
-# DEBUG = True
+Authtokens = {
+    "game_master" : "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImpoSWFSYWdqMUxtU0pEazZESTJDdiJ9.eyJpc3MiOiJodHRwczovL2Rldi10ZXN0LWZzbmQuZXUuYXV0aDAuY29tLyIsInN1YiI6Imdvb2dsZS1vYXV0aDJ8MTAyNzM1NDM5MDU1NTU5MTYyMTE5IiwiYXVkIjpbIm5wYy10cmFja2VyIiwiaHR0cHM6Ly9kZXYtdGVzdC1mc25kLmV1LmF1dGgwLmNvbS91c2VyaW5mbyJdLCJpYXQiOjE2MTQxODEyNzIsImV4cCI6MTYxNDI2NzY3MiwiYXpwIjoiZHZiWEt0TDRqNHl1NEpMM2dRc1dzd3M3QndGSWxYUEYiLCJzY29wZSI6Im9wZW5pZCBwcm9maWxlIGVtYWlsIiwicGVybWlzc2lvbnMiOlsiYWRkOm5wYyIsImRlbGV0ZTpucGMiLCJlZGl0Om5wYyIsImdldDpucGNzIl19.ZHcULIuOvznw0SL3KxTPdtIvD6tq8z_XnT9y8qMqmFbdZDz49qFyaN1UzE7-4J17g1VzMap9UEMdMNa3MiwMNqn62EjoEO2-k7gIIMD_0tsW50T3aWuX_G0y3izzImGjOSfnZwd0_J506uesgsVvkTB1Di5lmA6ZkU5vS2MTdV8mQ0v-hCvnDLEh84J4wM-D1PiJhvHAZ1sARS3mO8exZQfEauuxNuvf-y75cAHCq-DZi7AakpJBGXHdYH92kep96myfyDQfj5BTKkb6A-o88yv2buayrZxHW4TK5PfozQ2p7IIsbJck1iJD4RnG3n24GF21Ml-RrU-jGxt2afmHGQ",
+    "viewer" : "tbc"
+}
