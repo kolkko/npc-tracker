@@ -18,6 +18,7 @@ six = "*"
 "flask.cors" = "*"
 authlib = "*"
 requests = "*"
+simplejson = "*"
 
 [dev-packages]
 
