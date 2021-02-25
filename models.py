@@ -3,13 +3,13 @@ from sqlalchemy import Column, String, Integer, create_engine, Boolean
 from flask_sqlalchemy import SQLAlchemy
 import json
 
-DB_HOST = os.getenv('DB_HOST', 'localhost:5432')  
-DB_USER = os.getenv('DB_USER', 'postgres')  
-DB_PASSWORD = os.getenv('DB_PASSWORD', 'a')  
-DB_NAME = os.getenv('DB_NAME', 'npc_test')  
-DATABASE_URL = 'postgresql+psycopg2://{}:{}@{}/{}'.format(DB_USER, DB_PASSWORD, DB_HOST, DB_NAME)
+# DB_HOST = os.getenv('DB_HOST', 'localhost:5432')  
+# DB_USER = os.getenv('DB_USER', 'postgres')  
+# DB_PASSWORD = os.getenv('DB_PASSWORD', 'a')  
+# DB_NAME = os.getenv('DB_NAME', 'npc_test')  
+# DATABASE_URL = 'postgresql+psycopg2://{}:{}@{}/{}'.format(DB_USER, DB_PASSWORD, DB_HOST, DB_NAME)
 
-# DATABASE_URL = os.environ['DATABASE_URL']
+DATABASE_URL = os.environ['DATABASE_URL']
 
 db = SQLAlchemy()
 
@@ -37,8 +37,9 @@ class Npc(db.Model):
   roleplaying = db.Column(db.String)
   background = db.Column(db.String)
   place_id = db.Column(db.Integer, db.ForeignKey('places.id'))
+  user_id = db.Column(db.String)
 
-  def __init__(self, name, appearance, occupation, roleplaying, background, place_id):
+  def __init__(self, name, appearance, occupation, roleplaying, background, place_id, user_id):
     print('creating new npc')
     self.name = name
     self.appearance = appearance
@@ -46,6 +47,7 @@ class Npc(db.Model):
     self.roleplaying = roleplaying
     self.background = background
     self.place_id = place_id
+    self.user_id = user_id
 
   def insert(self):
     db.session.add(self)
@@ -67,7 +69,8 @@ class Npc(db.Model):
       'appearance': self.appearance,
       'occupation': self.occupation,
       'roleplaying': self.roleplaying,
-      'background': self.background
+      'background': self.background,
+      'user_id': self.user_id
     }
 
 '''
@@ -81,13 +84,13 @@ class Place(db.Model):
   location = Column(String)
   description = Column(String)
   all_npcs = db.relationship('Npc', backref='place', lazy=True)
+  user_id = db.Column(db.String)
 
-  def __init__(self, new_name, new_location, new_description):
-    print('adding new place in init')
-    self.name = new_name
-    self.location = new_location
-    self.description = new_description
-    print(self.name)
+  def __init__(self, name, location, description, user_id):
+    self.name = name
+    self.location = location
+    self.description = description
+    self.user_id = user_id
 
   def insert(self):
     db.session.add(self)
@@ -105,7 +108,8 @@ class Place(db.Model):
       'id': self.id,
       'name': self.name,
       'location': self.location,
-      'description': self.description
+      'description': self.description,
+      'user_id': self.user_id
     }
 
 # '''

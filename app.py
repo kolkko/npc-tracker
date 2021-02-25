@@ -107,9 +107,8 @@ def create_app(test_config=None):
   @cross_origin()
   @requires_auth('get:npcs')
   def npcs(payload):
-    print('PAYLOAD', payload)
-    data = Npc.query.all()
-    print(data)
+    data = Npc.query.filter(
+      Npc.user_id == payload['sub']).all()
     places = Place.query.all()
     place_names= []
     for d in data:
@@ -133,7 +132,9 @@ def create_app(test_config=None):
     selection = Npc.query.filter(
             Npc.id == npc_id).one_or_none()
     if not selection:
-        abort(400)
+      abort(400)
+    if selection.user_id != payload['sub']:
+      abort(401)
     npc = selection.format()
     return render_template('npc.html', data=npc), 200
 
@@ -153,7 +154,8 @@ def create_app(test_config=None):
         occupation=request.form['occupation'],
         roleplaying=request.form['roleplaying'],
         background=request.form['background'], 
-        place_id=npc_place.id
+        place_id=npc_place.id,
+        user_id=payload['sub']
       )
       new_npc.insert()
       return redirect(url_for('npcs'))
@@ -192,6 +194,8 @@ def create_app(test_config=None):
       Npc.id == npc_id).one_or_none()
     if not selection:
       abort(400)
+    if selection.user_id != payload['sub']:
+      abort(401)
     try:
       selection.delete()
       return redirect(url_for('npcs'))
@@ -227,9 +231,10 @@ def create_app(test_config=None):
   def post_place(payload):
     try:
       new_place = Place(
-        new_name=request.form['name'],
-        new_location=request.form['location'],
-        new_description=request.form['description']
+        name=request.form['name'],
+        location=request.form['location'],
+        description=request.form['description'],
+        user_id=payload['sub']
       )
       print('about to insert data')
       new_place.insert()
@@ -369,6 +374,14 @@ def create_app(test_config=None):
         'error': 400,
         "message": "bad request"
     }), 400
+
+  @app.errorhandler(401)
+  def unauthorized(error):
+    return jsonify({
+        'success': False,
+        'error': 401,
+        "message": "unauthorized"
+    }), 401
 
   @app.errorhandler(404)
   def resource_not_found(error):
