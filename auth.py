@@ -9,8 +9,8 @@ from os import environ
 
 
 AUTH0_DOMAIN = os.getenv('AUTH0_DOMAIN')
-ALGORITHMS = ['RS256']
-API_AUDIENCE = 'npc-tracker'
+ALGORITHMS = os.getenv('ALGORITHMS')
+AUTH0_AUDIENCE = os.getenv('AUTH0_AUDIENCE')
 
 ## AuthError Exception
 '''
@@ -123,7 +123,7 @@ def verify_decode_jwt(token):
                 token,
                 rsa_key,
                 algorithms=ALGORITHMS,
-                audience=API_AUDIENCE,
+                audience=AUTH0_AUDIENCE,
                 issuer=f'https://{AUTH0_DOMAIN}/'
             )
             
