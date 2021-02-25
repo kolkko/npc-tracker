@@ -82,7 +82,12 @@ def create_app(test_config=None):
     token = auth0.authorize_access_token()
     session['token'] = token['access_token']
     print(session['token'])
-    return redirect(url_for('npcs'))
+    return redirect(url_for('logged_in'))
+
+  @app.route('/logged-in')
+  @cross_origin()
+  def logged_in():
+    return render_template('logged-in.html')
 
   # route handler to log out
   @app.route('/logout')
@@ -150,7 +155,7 @@ def create_app(test_config=None):
         place_id=npc_place.id
       )
       new_npc.insert()
-      return redirect(url_for('npcs'))
+      return redirect(url_for('logged_in'))
     except Exception:
       abort(422)
 
@@ -163,15 +168,17 @@ def create_app(test_config=None):
         Npc.id == npc_id).one_or_none()
     if not form:
       abort(400)
+    npc_place = Place.query.filter(
+            Place.id == request.form['place_id']).one_or_none()
     try:
       npc.name=request.form['name'],
       npc.appearance=request.form['appearance'],
       npc.occupation=request.form['occupation'],
       npc.roleplaying=request.form['roleplaying'],
       npc.background=request.form['background'], 
-      npc.place_id=request.form['place_id']
+      npc.place_id=npc_place.id
       npc.update()
-      return redirect(url_for('npcs'))
+      return redirect(url_for('logged_in'))
     except Exception:
       abort(422)
 
@@ -186,7 +193,7 @@ def create_app(test_config=None):
       abort(400)
     try:
       selection.delete()
-      return redirect(url_for('npcs'))
+      return redirect(url_for('logged_in'))
     except Exception:
       abort(422)
 
@@ -226,7 +233,7 @@ def create_app(test_config=None):
       print('about to insert data')
       new_place.insert()
       print('data has been inserted')
-      return redirect(url_for('get_places'))
+      return redirect(url_for('logged_in'))
     except Exception:
       abort(422)
 
@@ -244,7 +251,7 @@ def create_app(test_config=None):
       place.location=request.form['location'],
       place.description=request.form['description'],
       place.update()
-      return redirect(url_for('get_places'))
+      return redirect(url_for('logged_in'))
     except Exception:
       abort(422)
 
@@ -263,7 +270,7 @@ def create_app(test_config=None):
         abort(400)
     try:
         selection.delete()
-        return redirect(url_for('get_places'))
+        return redirect(url_for('logged_in'))
     except Exception:
         abort(422)
 
@@ -309,13 +316,20 @@ def create_app(test_config=None):
         Npc.id == npc_id).one_or_none()
     if not selection:
         abort(400)
+    current_place = Place.query.filter(
+        Place.id == selection.place_id).one_or_none()
+    data = Place.query.order_by(Place.location).all()
+    places_list = [(current_place.id, current_place.name)]
+    for d in data:
+      places_list.append((d.id, d.name))
+    print(places_list)
     form = NpcForm()
     form.name.data = selection.name
     form.appearance.data = selection.appearance
     form.occupation.data = selection.occupation
     form.roleplaying.data = selection.roleplaying
     form.background.data = selection.background
-    form.place_id.data = selection.place_id
+    form.place_id.choices = places_list
     return render_template('edit_npc.html', form=form,  data=selection)    
 
   @app.route('/places/create', methods=['GET'])

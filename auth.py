@@ -88,6 +88,9 @@ def check_permissions(permission, payload):
 '''
 def verify_decode_jwt(token):
     # GET THE PUBLIC KEY FROM AUTH0
+    AUTH0_DOMAIN = os.getenv('AUTH0_DOMAIN')
+    ALGORITHMS = os.getenv('ALGORITHMS')
+    AUTH0_AUDIENCE = os.getenv('AUTH0_AUDIENCE')
     print(f'https://{AUTH0_DOMAIN}/.well-known/jwks.json')
     jsonurl = urlopen(f'https://{AUTH0_DOMAIN}/.well-known/jwks.json')
     jwks = json.loads(jsonurl.read())

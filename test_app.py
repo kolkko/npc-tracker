@@ -7,6 +7,7 @@ from flask_wtf import Form
 from app import create_app
 from models import setup_db, Npc, Place
 from forms import *
+from auth import requires_auth, AuthError 
 from config import Authtokens
 
 # dm = 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImpoSWFSYWdqMUxtU0pEazZESTJDdiJ9.eyJpc3MiOiJodHRwczovL2Rldi10ZXN0LWZzbmQuZXUuYXV0aDAuY29tLyIsInN1YiI6Imdvb2dsZS1vYXV0aDJ8MTAyNzM1NDM5MDU1NTU5MTYyMTE5IiwiYXVkIjpbIm5wYy10cmFja2VyIiwiaHR0cHM6Ly9kZXYtdGVzdC1mc25kLmV1LmF1dGgwLmNvbS91c2VyaW5mbyJdLCJpYXQiOjE2MTQxNzg2MzIsImV4cCI6MTYxNDI2NTAzMiwiYXpwIjoiZHZiWEt0TDRqNHl1NEpMM2dRc1dzd3M3QndGSWxYUEYiLCJzY29wZSI6Im9wZW5pZCBwcm9maWxlIGVtYWlsIiwicGVybWlzc2lvbnMiOlsiYWRkOm5wYyIsImRlbGV0ZTpucGMiLCJlZGl0Om5wYyIsImdldDpucGNzIl19.NShPnh-KEMcW-Hp-itc91PInzEgoN1lRl5KHb8eealPpuBlCwhwHVJRd8OG9ROA-HQvfxMNSjELyOP0NREnyrFmsEeBCHA7iPwR_YQ9FN7ouJS7GxC5bgCyokz7fEUKyWrbT_ej7tUUXREKLrT0zBhYhWVTyNF1VCBYVqUB9NbQpCBRY1TgOUWuOlsq9B4tYd_9ZzQu_A6dziarx54hLEt8iXd8dtxyFOIEVoL0xthUOEGa4Glf2jXc51Cr-H4dfx7f5gNB89fGAMj-kY5mCKEOQOwHFFZgujqmWpDdyJ7-qtc4uFskL0X8PsTSBw4t4C1UaQj8jGHhlCo1j2Dgc3w'
@@ -25,6 +26,7 @@ class NpcTrackerTestCase(unittest.TestCase):
         self.app.testing = True
         self.client = self.app.test_client
         self.game_master = Authtokens["game_master"]
+        self.viewer = Authtokens["viewer"]
         self.database_name = DB_NAME
         self.database_path = DB_PATH
         setup_db(self.app, self.database_path)
@@ -47,7 +49,7 @@ class NpcTrackerTestCase(unittest.TestCase):
         self.assertEqual(res.status_code, 404)
     
     def test_get_npcs(self):
-        res = self.client().get('/npcs', headers={'Authorization': str(self.game_master)})
+        res = self.client().get('/npcs', headers={'Authorization': str(self.viewer)})
         self.assertEqual(res.status_code, 200)
 
 # ----------------------------------------------------------------------------
