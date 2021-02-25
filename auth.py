@@ -36,6 +36,7 @@ class AuthError(Exception):
 def get_token_auth_header():
 #     """Obtains the Access Token from the Authorization Header
 #     """
+    print('GETTING AUTH HEADER')
     if "Authorization" in request.headers:
         auth_header = request.headers["Authorization"]
         if auth_header:
@@ -172,11 +173,16 @@ def requires_auth(permission=''):
     def requires_auth_decorator(f):
         @wraps(f)
         def wrapper(*args, **kwargs):
+            print('FOUND REQUIRES AUTH')
             try:
                 token = None
-                if session['token']:
+                if "Test" in request.headers:
+                    token = get_token_auth_header()
+                elif session['token']:
+                    print('SESSION TOKEN')                    
                     token = session['token']
                 else:
+                    print('OFF TO GET AUTH HEADER')
                     token = get_token_auth_header()
                 print('token at authorization time: {}'.format(token))
                 if token is None:

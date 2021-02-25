@@ -82,7 +82,7 @@ def create_app(test_config=None):
     token = auth0.authorize_access_token()
     session['token'] = token['access_token']
     print(session['token'])
-    return redirect(url_for('logged_in'))
+    return redirect(url_for('npcs'))
 
   @app.route('/logged-in')
   @cross_origin()
@@ -100,14 +100,14 @@ def create_app(test_config=None):
     return redirect('https://dev-test-fsnd.eu.auth0.com' + '/v2/logout?' + urlencode(params))
 
   # -----------------------------------------------------------
-  # Load Pages
+  # CRUD Operations for Npc
   # -----------------------------------------------------------
 
   @app.route('/npcs', methods = ['GET'])
   @cross_origin()
   @requires_auth('get:npcs')
   def npcs(payload):
-    print('Getting data')
+    print('PAYLOAD', payload)
     data = Npc.query.all()
     print(data)
     places = Place.query.all()
@@ -156,7 +156,7 @@ def create_app(test_config=None):
         place_id=npc_place.id
       )
       new_npc.insert()
-      return redirect(url_for('logged_in'))
+      return redirect(url_for('npcs'))
     except Exception:
       abort(422)
 
@@ -179,7 +179,7 @@ def create_app(test_config=None):
       npc.background=request.form['background'], 
       npc.place_id=npc_place.id
       npc.update()
-      return redirect(url_for('logged_in'))
+      return redirect(url_for('npcs'))
     except Exception:
       abort(422)
 
@@ -194,7 +194,7 @@ def create_app(test_config=None):
       abort(400)
     try:
       selection.delete()
-      return redirect(url_for('logged_in'))
+      return redirect(url_for('npcs'))
     except Exception:
       abort(422)
 
@@ -234,7 +234,7 @@ def create_app(test_config=None):
       print('about to insert data')
       new_place.insert()
       print('data has been inserted')
-      return redirect(url_for('logged_in'))
+      return redirect(url_for('get_places'))
     except Exception:
       abort(422)
 
@@ -252,7 +252,7 @@ def create_app(test_config=None):
       place.location=request.form['location'],
       place.description=request.form['description'],
       place.update()
-      return redirect(url_for('logged_in'))
+      return redirect(url_for('get_places'))
     except Exception:
       abort(422)
 
@@ -271,7 +271,7 @@ def create_app(test_config=None):
         abort(400)
     try:
         selection.delete()
-        return redirect(url_for('logged_in'))
+        return redirect(url_for('get_places'))
     except Exception:
         abort(422)
 
@@ -304,7 +304,9 @@ def create_app(test_config=None):
   # Create resources
   # -----------------------------------------------------------
   @app.route('/npcs/create', methods=['GET'])
-  def create_npc_form():
+  @cross_origin()
+  @requires_auth('add:npc')
+  def create_npc_form(payload):
     form = NpcForm()
     data = Place.query.order_by(Place.location).all()
     places_list = [(d.id, d.name) for d in data]
@@ -312,7 +314,9 @@ def create_app(test_config=None):
     return render_template('new_npc.html', form=form)
 
   @app.route('/npcs/<int:npc_id>/edit', methods=['GET'])
-  def edit_npc(npc_id):
+  @cross_origin()
+  @requires_auth('edit:npc')
+  def edit_npc(payload, npc_id):
     selection = Npc.query.filter(
         Npc.id == npc_id).one_or_none()
     if not selection:
@@ -334,12 +338,16 @@ def create_app(test_config=None):
     return render_template('edit_npc.html', form=form,  data=selection)    
 
   @app.route('/places/create', methods=['GET'])
-  def create_place_form():
+  @cross_origin()
+  @requires_auth('add:npc')
+  def create_place_form(payload):
     form = PlaceForm()
     return render_template('new_place.html', form=form)
 
   @app.route('/places/<int:place_id>/edit', methods=['GET'])
-  def edit_place(place_id):
+  @cross_origin()
+  @requires_auth('add:npc')
+  def edit_place(payload, place_id):
     selection = Place.query.filter(
         Place.id == place_id).one_or_none()
     if not selection:
