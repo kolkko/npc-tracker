@@ -86,7 +86,8 @@ def create_app(test_config=None):
 
   @app.route('/logged-in')
   @cross_origin()
-  def logged_in():
+  @requires_auth('get:npcs')
+  def logged_in(payload):
     return render_template('logged-in.html')
 
   # route handler to log out
