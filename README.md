@@ -15,7 +15,7 @@ The NPC Tracker has been deployed to Heroku and is currently working at this lin
 <strong>[https://npc-tracker.herokuapp.com](https://npc-tracker.herokuapp.com/)</strong>
 
 To log in, enter the following credentials:</br>
-Email: dm@testing.test</br>
+Email: gm@testing.test</br>
 Password: test1!Ta</br>
 
 ![homepage](npc_tracker_home.PNG)
@@ -65,7 +65,7 @@ Users can access the homepage anonymously and, after logging in, a user will hav
 1. <strong>Game Master</strong>: Can complete all CRUD functions for both Npc and Places.
 ```
 Game Master login credentials
-Email: dm@testing.test
+Email: gm@testing.test
 Password: test1!Ta
 ```
 
