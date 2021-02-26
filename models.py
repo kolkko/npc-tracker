@@ -79,10 +79,10 @@ PLACES
 class Place(db.Model):  
   __tablename__ = 'places'
 
-  id = Column(Integer, primary_key=True)
-  name = Column(String)
-  location = Column(String)
-  description = Column(String)
+  id = db.Column(db.Integer, primary_key=True)
+  name = db.Column(db.String)
+  location = db.Column(db.String)
+  description = db.Column(db.String)
   all_npcs = db.relationship('Npc', backref='place', lazy=True)
   user_id = db.Column(db.String)
 
