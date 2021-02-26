@@ -15,7 +15,7 @@ To log in, enter the following credentials:</br>
 Email: dm@testing.test</br>
 Password: test1!Ta</br>
 
-![homepage](add link)
+![homepage](npc_tracker_home.PNG)
 
 ## Skills covered
 - Relational database architecture
