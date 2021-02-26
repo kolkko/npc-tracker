@@ -57,7 +57,7 @@ $ flask run --reload
 ## Usage
 
 ### NPC Tracker roles
-Users can access the homepage anonymously and, after logging in, a user will have one of two roles.
+Users can access the homepage anonymously and, after logging in, a user will have one of two roles. Users can view all places and only NPCs associated with their user ID.
 
 1. <strong>Game Master</strong>: Can complete all CRUD functions for both Npc and Places.
 ```
