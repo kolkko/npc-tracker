@@ -9,13 +9,13 @@ Within the application, there are two classes: NPCs and Places. NPCs are charact
 
 #### How can I access the app?
 The NPC Tracker has been deployed to Heroku and is currently working at this link:</br> 
-<strong>[https://npc-tracker.herokuapp.com](https://npc.tracker.herokuapp.com/)</strong>
+<strong>[https://npc-tracker.herokuapp.com](https://npc-tracker.herokuapp.com/)</strong>
 
 To log in, enter the following credentials:</br>
 Email: dm@testing.test</br>
 Password: test1!Ta</br>
 
-![homepage](add link)
+![homepage](npc_tracker_home.PNG)
 
 ## Skills covered
 - Relational database architecture
