@@ -66,7 +66,7 @@ Email: dm@testing.test
 Password: test1!Ta
 ```
 
-2. <strong>Viewer</strong>: Can view all data, but cannot edit, delete or create.
+2. <strong>Viewer</strong>: Can view and create, but cannot edit or delete.
 ```
 Executive producer login credentials
 User: viewer@testing.test
@@ -125,11 +125,11 @@ The NPC Tracker API includes the following endpoints. Below is an overview of th
 
 #### POST /npcs/create
 - Adds a new NPC to the database
-- Roles authorized: game master
+- Roles authorized: game master, viewer
 
 #### POST /places/create
 - Adds a new place to the database
-- Roles authorized: game master
+- Roles authorized: game master, viewer
 
 #### GET /npcs/{npc_id}/edit
 - Returns the form to update a movie project
