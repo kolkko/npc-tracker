@@ -10,6 +10,7 @@ from forms import *
 from auth import requires_auth, AuthError
 from config import Authtokens
 
+
 class NpcTrackerTestCase(unittest.TestCase):
 
     # runs before each test
@@ -60,12 +61,12 @@ class NpcTrackerTestCase(unittest.TestCase):
     # -------------------------------------------------------------------------#
     # Test: RBAC
     # -------------------------------------------------------------------------#
-    
+
     def test_rbac_success(self):
         res = self.client().get('/npcs/create', headers={'Authorization':
                                 str(self.game_master), 'Test': 'test'})
         self.assertEqual(res.status_code, 200)
-    
+
     def test_rbac_error(self):
         res = self.client().post('/npcs/create', headers={'Authorization':
                                  str(self.viewer), 'Test': 'test'})
@@ -247,6 +248,7 @@ class NpcTrackerTestCase(unittest.TestCase):
             '/places/999999/edit',
             headers={'Authorization': str(self.game_master), 'Test': 'test'})
         self.assertEqual(res.status_code, 401)
+
 
 # Make the tests conveniently executable
 if __name__ == "__main__":

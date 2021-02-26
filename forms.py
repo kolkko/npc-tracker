@@ -1,8 +1,8 @@
 from datetime import datetime
 from flask_wtf import Form
-from wtforms import StringField, SelectField, SelectMultipleField, DateTimeField, BooleanField, IntegerField, DateTimeField
+from wtforms import (StringField, SelectField, SelectMultipleField,
+                     DateTimeField, BooleanField, IntegerField, DateTimeField)
 from wtforms.validators import DataRequired, AnyOf, URL, Regexp
-
 
 
 class NpcForm(Form):
@@ -36,6 +36,7 @@ class NpcForm(Form):
     #     'facebook_link', validators=[URL()]
     # )
 
+
 class PlaceForm(Form):
     name = StringField(
         'name', validators=[DataRequired()]
@@ -46,4 +47,3 @@ class PlaceForm(Form):
     description = StringField(
         'description', validators=[]
     )
-

@@ -11,11 +11,13 @@ AUTH0_DOMAIN = os.getenv('AUTH0_DOMAIN')
 ALGORITHMS = os.getenv('ALGORITHMS')
 AUTH0_AUDIENCE = os.getenv('AUTH0_AUDIENCE')
 
+
 # AuthError Exception
 class AuthError(Exception):
     def __init__(self, error, status_code):
         self.error = error
         self.status_code = status_code
+
 
 # Auth Header: Obtains the Access Token from the Authorization Header
 def get_token_auth_header():
@@ -23,7 +25,9 @@ def get_token_auth_header():
         auth_header = request.headers["Authorization"]
         if auth_header:
             bearer_token_array = auth_header.split(' ')
-            if bearer_token_array[0] and bearer_token_array[0].lower() == "bearer" and bearer_token_array[1]:
+            if (bearer_token_array[0] and
+                    bearer_token_array[0].lower() == "bearer" and
+                    bearer_token_array[1]):
                 return bearer_token_array[1]
 
     raise AuthError({
@@ -31,6 +35,7 @@ def get_token_auth_header():
         'message': 'JWT not found',
         'error': 401
     }, 401)
+
 
 def check_permissions(permission, payload):
     if 'permissions' not in payload:
@@ -46,6 +51,7 @@ def check_permissions(permission, payload):
         }, 401)
 
     return True
+
 
 def verify_decode_jwt(token):
     # get the public key from Auth0
@@ -102,7 +108,7 @@ def verify_decode_jwt(token):
         except jwt.JWTClaimsError:
             raise AuthError({
                 'success': False,
-                'message': 'Incorrect claims. Please, check the audience and issuer',
+                'message': 'Incorrect claims.',
                 'error': 401,
             }, 401)
 
@@ -119,6 +125,7 @@ def verify_decode_jwt(token):
         'error': 400,
     }, 400)
 
+
 def requires_auth(permission=''):
     def requires_auth_decorator(f):
         @wraps(f)
@@ -127,7 +134,7 @@ def requires_auth(permission=''):
                 token = None
                 if "Test" in request.headers:
                     token = get_token_auth_header()
-                elif session['token']:     
+                elif session['token']:
                     token = session['token']
                 else:
                     token = get_token_auth_header()

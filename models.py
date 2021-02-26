@@ -14,6 +14,7 @@ DATABASE_URL = ('postgresql+psycopg2://{}:{}@{}/{}'.
 
 db = SQLAlchemy()
 
+
 # -------------------------------------------------------------------------#
 # Bind flask application with a SQLAlchemy service
 # -------------------------------------------------------------------------#
@@ -24,6 +25,7 @@ def setup_db(app, database_path=DATABASE_URL):
     db.app = app
     db.init_app(app)
     db.create_all()
+
 
 # -------------------------------------------------------------------------#
 # NPC model
@@ -73,6 +75,7 @@ class Npc(db.Model):
             'background': self.background,
             'user_id': self.user_id
         }
+
 
 # -------------------------------------------------------------------------#
 # Place model

@@ -21,10 +21,10 @@ AUTH0_DOMAIN = os.getenv('AUTH0_DOMAIN')
 AUTH0_BASE_URL = os.getenv('AUTH0_BASE_URL')
 AUTH0_AUDIENCE = os.getenv('AUTH0_AUDIENCE')
 
+
 # ----------------------------------------------------------------------------#
 # Create and configure the application
 # ----------------------------------------------------------------------------#
-
 def create_app(test_config=None):
     app = Flask(__name__)
     app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
@@ -419,6 +419,7 @@ def create_app(test_config=None):
         }), 422
 
     return app
+
 
 app = create_app()
 # Launch app
