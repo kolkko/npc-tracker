@@ -1,6 +1,9 @@
 # Character Details Tracker 
 
-This is my final project for the [Udacity Full Stack Web Developer Nanodegree](https://www.udacity.com/course/full-stack-web-developer-nanodegree--nd004). It is an application that allows people to store details of NPCs (non-player characters) for their table-top role playing games. 
+### Motivation
+
+#### Why make this project?
+This is my final project for the [Udacity Full Stack Web Developer Nanodegree](https://www.udacity.com/course/full-stack-web-developer-nanodegree--nd004). It is an application that allows people to store details of NPCs (non-player characters) for their table-top role playing games. I put together this project to practice my full stack web development skills and make a tool that I would actually find useful.
 
 #### Who's it for?
 The NPC Tracker is for Game and Dungeon Masters, providing a simple tool where they can keep track of all the NPCs in their game.</br>
