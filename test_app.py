@@ -58,6 +58,20 @@ class NpcTrackerTestCase(unittest.TestCase):
         self.assertEqual(res.status_code, 401)
 
     # -------------------------------------------------------------------------#
+    # Test: RBAC
+    # -------------------------------------------------------------------------#
+    
+    def test_rbac_success(self):
+        res = self.client().get('/npcs/create', headers={'Authorization':
+                                str(self.game_master), 'Test': 'test'})
+        self.assertEqual(res.status_code, 200)
+    
+    def test_rbac_error(self):
+        res = self.client().post('/npcs/create', headers={'Authorization':
+                                 str(self.viewer), 'Test': 'test'})
+        self.assertEqual(res.status_code, 401)
+
+    # -------------------------------------------------------------------------#
     # Test: NPC operations
     # -------------------------------------------------------------------------#
 
