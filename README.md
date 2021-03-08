@@ -45,6 +45,7 @@ Password: test1!Ta</br>
 ## Updates
 #### To do
 * Assess and improve accessibility of site.
+* Add helper descriptions to NPC and Place fields on form.
 * Add ability to create a new place when creating an NPC.
 * Include view of all NPCs and places that are in a specific location.
 * Create a user page, where account data can be downloaded and account deleted.
