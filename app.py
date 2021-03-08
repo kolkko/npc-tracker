@@ -136,10 +136,11 @@ def create_app(test_config=None):
                 Npc.id == npc_id).one_or_none()
         if not selection:
             abort(400)
-        if selection.user_id != payload['sub']:
+        if (selection.user_id == payload['sub']):
+            npc = selection.format()
+            return render_template('npc.html', data=npc), 200
+        else:
             abort(401)
-        npc = selection.format()
-        return render_template('npc.html', data=npc), 200
 
     @app.route('/npcs/create', methods=['POST'])
     @cross_origin()
@@ -174,19 +175,22 @@ def create_app(test_config=None):
             Npc.id == npc_id).one_or_none()
         if not form:
             abort(400)
-        npc_place = Place.query.filter(
-                Place.id == request.form['place_id']).one_or_none()
-        try:
-            npc.name = request.form['name'],
-            npc.appearance = request.form['appearance'],
-            npc.occupation = request.form['occupation'],
-            npc.roleplaying = request.form['roleplaying'],
-            npc.background = request.form['background'],
-            npc.place_id = npc_place.id
-            npc.update()
-            return redirect(url_for('npcs'))
-        except Exception:
-            abort(422)
+        if (npc.user_id == payload['sub']):
+            npc_place = Place.query.filter(
+                    Place.id == request.form['place_id']).one_or_none()
+            try:
+                npc.name = request.form['name'],
+                npc.appearance = request.form['appearance'],
+                npc.occupation = request.form['occupation'],
+                npc.roleplaying = request.form['roleplaying'],
+                npc.background = request.form['background'],
+                npc.place_id = npc_place.id
+                npc.update()
+                return redirect(url_for('npcs'))
+            except Exception:
+                abort(422)
+        else:
+            abort(401)
 
     @app.route('/npcs/<int:npc_id>/delete', methods=['GET'])
     @cross_origin()
@@ -197,13 +201,14 @@ def create_app(test_config=None):
           Npc.id == npc_id).one_or_none()
         if not selection:
             abort(400)
-        if selection.user_id != payload['sub']:
+        if (selection.user_id == payload['sub']):
+            try:
+                selection.delete()
+                return redirect(url_for('npcs'))
+            except Exception:
+                abort(422)
+        else:
             abort(401)
-        try:
-            selection.delete()
-            return redirect(url_for('npcs'))
-        except Exception:
-            abort(422)
 
     # -------------------------------------------------------------------------#
     # CRUD Operations for Place
@@ -213,7 +218,9 @@ def create_app(test_config=None):
     @cross_origin()
     @requires_auth('get:npcs')
     def get_places(payload):
-        results = Place.query.order_by(Place.location).all()
+        results = Place.query.filter(
+            Place.user_id == payload['sub']
+        ).order_by(Place.location).all()
         places = [place.format() for place in results]
         return render_template('places.html', data=places), 200
 
@@ -225,8 +232,11 @@ def create_app(test_config=None):
                 Place.id == place_id).one_or_none()
         if not selection:
             abort(400)
-        place = selection.format()
-        return render_template('place.html', data=place), 200
+        if (selection.user_id == payload['sub']):
+            place = selection.format()
+            return render_template('place.html', data=place), 200
+        else:
+            abort(401)
 
     @app.route('/places/create', methods=['POST'])
     @cross_origin()
@@ -255,14 +265,17 @@ def create_app(test_config=None):
             Place.id == place_id).one_or_none()
         if not form:
             abort(400)
-        try:
-            place.name = request.form['name'],
-            place.location = request.form['location'],
-            place.description = request.form['description'],
-            place.update()
-            return redirect(url_for('get_places'))
-        except Exception:
-            abort(422)
+        if (place.user_id == payload['sub']):
+            try:
+                place.name = request.form['name'],
+                place.location = request.form['location'],
+                place.description = request.form['description'],
+                place.update()
+                return redirect(url_for('get_places'))
+            except Exception:
+                abort(422)
+        else:
+            abort(401)
 
     @app.route('/places/<int:place_id>/delete', methods=['GET'])
     @cross_origin()
@@ -274,14 +287,16 @@ def create_app(test_config=None):
             abort(400)
         selection = Place.query.filter(
             Place.id == place_id).one_or_none()
-        print("selection")
         if not selection:
             abort(400)
-        try:
-            selection.delete()
-            return redirect(url_for('get_places'))
-        except Exception:
-            abort(422)
+        if (selection.user_id == payload['sub']):
+            try:
+                selection.delete()
+                return redirect(url_for('get_places'))
+            except Exception:
+                abort(422)
+        else:
+            abort(401)
 
     # -------------------------------------------------------------------------#
     # View places associated with a location
@@ -316,7 +331,9 @@ def create_app(test_config=None):
     @requires_auth('add:npc')
     def create_npc_form(payload):
         form = NpcForm()
-        data = Place.query.order_by(Place.location).all()
+        data = Place.query.filter(
+                Place.user_id == payload['sub']
+            ).order_by(Place.location).all()
         places_list = [(d.id, d.name) for d in data]
         form.place_id.choices = places_list
         return render_template('new_npc.html', form=form)
@@ -329,21 +346,26 @@ def create_app(test_config=None):
             Npc.id == npc_id).one_or_none()
         if not selection:
             abort(400)
-        current_place = Place.query.filter(
-            Place.id == selection.place_id).one_or_none()
-        data = Place.query.order_by(Place.location).all()
-        places_list = [(current_place.id, current_place.name)]
-        for d in data:
-            places_list.append((d.id, d.name))
-        print(places_list)
-        form = NpcForm()
-        form.name.data = selection.name
-        form.appearance.data = selection.appearance
-        form.occupation.data = selection.occupation
-        form.roleplaying.data = selection.roleplaying
-        form.background.data = selection.background
-        form.place_id.choices = places_list
-        return render_template('edit_npc.html', form=form,  data=selection)
+        if (selection.user_id == payload['sub']):
+            current_place = Place.query.filter(
+                Place.id == selection.place_id).one_or_none()
+            data = Place.query.filter(
+                Place.user_id == payload['sub']
+            ).order_by(Place.location).all()
+            places_list = [(current_place.id, current_place.name)]
+            for d in data:
+                places_list.append((d.id, d.name))
+            print(places_list)
+            form = NpcForm()
+            form.name.data = selection.name
+            form.appearance.data = selection.appearance
+            form.occupation.data = selection.occupation
+            form.roleplaying.data = selection.roleplaying
+            form.background.data = selection.background
+            form.place_id.choices = places_list
+            return render_template('edit_npc.html', form=form,  data=selection)
+        else:
+            abort(401)
 
     @app.route('/places/create', methods=['GET'])
     @cross_origin()
@@ -360,11 +382,14 @@ def create_app(test_config=None):
             Place.id == place_id).one_or_none()
         if not selection:
             abort(400)
-        form = PlaceForm()
-        form.name.data = selection.name
-        form.location.data = selection.location
-        form.description.data = selection.description
-        return render_template('edit_place.html', form=form,  data=selection)
+        if (selection.user_id == payload['sub']):
+            form = PlaceForm()
+            form.name.data = selection.name
+            form.location.data = selection.location
+            form.description.data = selection.description
+            return render_template('edit_place.html', form=form,  data=selection)
+        else:
+            abort(401)
 
     # -------------------------------------------------------------------------#
     # API error handlers
