@@ -69,13 +69,11 @@ To access the app locally, you need a database, a virtual environment, dependenc
 $ cd project_directory_path/
 $ pipenv shell
 ```
-4. Install the dependencies for this project using the Pipfile and set up environment variables, adding your Auth0 settings:
-```
-$ source setup.sh
-```
+4. Install the dependencies for this project using the Pipfile and set up environment variables, adding your Auth0 settings.
+
 
 ## Setup
-1. Create a PostgreSQL database locally and add the path to models.py:
+1. Create a PostgreSQL database locally and add the path to models.py.
 2. Start the development server:  
 ```
 $ export FLASK_APP=app.py 
