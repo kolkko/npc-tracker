@@ -1,6 +1,15 @@
 # Character Details Tracker 
 
-### Motivation
+### Index
+1. [Overview](#overview)
+2. [Updates](#updates)
+3. [Dependencies](#dependencies)
+4. [Setup](#setup)
+5. [Usage](#usage)
+6. [Error handling](#error-handling)
+
+
+## Overview
 
 #### Why make this project?
 This is my final project for the [Udacity Full Stack Web Developer Nanodegree](https://www.udacity.com/course/full-stack-web-developer-nanodegree--nd004). It is an application that allows people to store details of NPCs (non-player characters) for their table-top role playing games. I put together this project to practice my full stack web development skills and make a tool that I would actually find useful.
@@ -20,7 +29,7 @@ Password: test1!Ta</br>
 
 ![homepage](npc_tracker_home.PNG)
 
-## Skills covered
+#### Skills covered
 - Relational database architecture
 - Modeling data objects with SQLAlchemy
 - Internet protocols and communication
@@ -32,6 +41,20 @@ Password: test1!Ta</br>
 - Testing Flask applications
 - Deploying applications
 - Coding in Python 3
+
+## Updates
+#### To do
+* Assess and improve accessibility of site.
+* Add ability to create a new place when creating an NPC.
+* Include view of all NPCs and places that are in a specific location.
+* Create a user page, where account data can be downloaded and account deleted.
+* Update and improve testing.
+
+#### Done
+* **08/03/21**
+    * Update functionality to ensure User ID is checked with all data requests.
+    * Change link colours to improve contrast against background.
+    * Reformat README to include index.
 
 ## Dependencies
 To access the app locally, you need a database, a virtual environment, dependencies installed, and environment variables set up. You also need an account with Auth0, an authentication service.

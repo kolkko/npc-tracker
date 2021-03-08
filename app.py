@@ -85,11 +85,12 @@ def create_app(test_config=None):
         print(session['token'])
         return redirect(url_for('npcs'))
 
-    @app.route('/logged-in')
+    # about page formatted for logged in user
+    @app.route('/about/user')
     @cross_origin()
     @requires_auth('get:npcs')
     def logged_in(payload):
-        return render_template('logged-in.html')
+        return render_template('about_logged_in.html')
 
     # route handler to log out
     @app.route('/logout')

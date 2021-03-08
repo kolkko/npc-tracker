@@ -17,7 +17,7 @@
     <tbody>
       {% for d in data %}
       <tr>
-        <td><a href="/npcs/{{ d.id }}">{{ d.name }}</a></td>
+        <td><a class="text-light" href="/npcs/{{ d.id }}">{{ d.name }}</a></td>
         <td>{{ d.occupation }}</td>
         <td>{{ d.place_name }}</td>
         <td class="text-right"><a class="btn btn-primary btn-sm" href="/npcs/{{ d.id }}" role="button">View</a></td>
