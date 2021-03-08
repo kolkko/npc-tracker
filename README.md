@@ -54,6 +54,7 @@ Password: test1!Ta</br>
 #### Done
 * **08/03/21**
     * Update functionality to ensure User ID is checked with all data requests.
+    * Update NPC forms such that 'Place' only shows places created by the current user.
     * Change link colours to improve contrast against background.
     * Reformat README to include index.
 
